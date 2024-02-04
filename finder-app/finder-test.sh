@@ -45,6 +45,7 @@ then
 	then
 		echo "$WRITEDIR created"
 	else
+		echo "Write directory doesn't exist"
 		exit 1
 	fi
 fi
