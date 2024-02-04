@@ -1,12 +1,12 @@
-CC=aarch64-none-linux-gnu-gcc
-CROSS_COMPILE=aarch64-none-linux-gnu-
+CC=gcc
+#CC=aarch64-none-linux-gnu-gcc
 DIR=-I.
 FLAGS=-g -Wall
 SRCS=$(wildcard *.c)
 OBJS=$(SRCS)
 
 %.o: %.c
-	$(CC) -o $@ -c $< $(FLAGS) $(DIR)
+	$(CC) -c -o $@ $< $(FLAGS) $(DIR)
 %: %.o
 	
 writer: $(OBJS)

@@ -44,14 +44,14 @@ int main(int argc, char* argv[])
 	size_t writestr_size = 0;
 	
 	//Writing <> to <>
-	char mesg[] = "Writing ";
-	
+	char mesg[10] = "Writing ";
+/*	
 	openlog(NULL, LOG_OPT, LOG_USER);
 
 	strcat(mesg, writestr);
 	strcat(mesg, " to ");
 	strcat(mesg, writefile);
-
+*/
 	//Error
 	//If number of arguments is not equal to 3. (First arg is process)
 	if(argc < 3)
@@ -72,7 +72,7 @@ int main(int argc, char* argv[])
 		
 		writestr_size = strlen(writestr);
 		
-		syslog(LOG_DEBUG, mesg);
+		syslog(LOG_DEBUG, "%s", mesg);
 		
 		write(file, writestr, writestr_size);
 		
