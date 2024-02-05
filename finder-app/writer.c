@@ -20,11 +20,13 @@ Author: AALogisz
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 
 #define WRITEFILE 1
 #define WRITESTR  2
 
 #define LOG_OPT (LOG_CONS | LOG_PID)
+#define OPEN_FLAGS (O_RDWR | O_CREAT | O_SYNC)
 
 //Args: 
 //1: writefile (full path to file) 
@@ -37,32 +39,28 @@ Author: AALogisz
 int main(int argc, char* argv[])
 {
 	int ret = 0;
-
+	int err = 0;
 	char* writefile = argv[WRITEFILE];
 	char* writestr = argv[WRITESTR];
-	int file = -1;
+	char buffer[1024];
+	
+	int file = 0;
 	size_t writestr_size = 0;
 	
-	//Writing <> to <>
-	char mesg[10] = "Writing ";
-/*	
 	openlog(NULL, LOG_OPT, LOG_USER);
 
-	strcat(mesg, writestr);
-	strcat(mesg, " to ");
-	strcat(mesg, writefile);
-*/
 	//Error
 	//If number of arguments is not equal to 3. (First arg is process)
 	if(argc < 3)
 	{
-		syslog(LOG_ERR, "Too few arguments");
+		syslog(LOG_ERR, "Too few arguments: %d", argc);
 		ret = 1;
 	}
 	else
 	{
-		file = open(writefile, O_WRONLY);
+		file = open(writefile, OPEN_FLAGS, S_IRWXU | S_IRWXG | S_IROTH);
 		
+		read(file, buffer, 1024);
 		
 		if(file < 0)
 		{
@@ -72,9 +70,14 @@ int main(int argc, char* argv[])
 		
 		writestr_size = strlen(writestr);
 		
-		syslog(LOG_DEBUG, "%s", mesg);
+		syslog(LOG_DEBUG, "Writing %s to %s", writestr, writefile);
 		
-		write(file, writestr, writestr_size);
+		err |= write(file, writestr, writestr_size);
+		
+		if(err < 0)
+		{
+			syslog(LOG_DEBUG, "File write error: %d", err);
+		}
 		
 		close(file);
 	}
